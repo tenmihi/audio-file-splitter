@@ -1,22 +1,21 @@
 import ffmpeg from "fluent-ffmpeg"
-import { ReadStream } from "fs"
+import { ReadStream, createReadStream, createWriteStream } from "fs"
 import { Time } from "./utils/time"
 
 export class AudioSplitter {
-  audio: ReadStream
+  input: string
 
-  constructor(audio: ReadStream) {
-    this.audio = audio
+  constructor(input: string) {
+    this.input = input
   }
 
-  split(start: Time, end?: Time): Promise<any> {
+  split(outputFilePath: string, start: Time, end?: Time): Promise<void> {
     return new Promise((resolve, reject) => {
-      const command = ffmpeg(this.audio)
+      const command = ffmpeg(createReadStream(this.input))
         .setStartTime(start.seconds)
         .audioChannels(2)
         .audioFrequency(44100)
-        .audioCodec("flac")
-        .outputFormat("flac")
+        .audioCodec("copy")
 
       if (end) {
         const duration = end.seconds - start.seconds
@@ -30,6 +29,7 @@ export class AudioSplitter {
         .on("error", (error: Error) => {
           reject(error)
         })
+        .output(outputFilePath)
         .run()
     })
   }
