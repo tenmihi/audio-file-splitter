@@ -1,5 +1,5 @@
 import ffmpeg from "fluent-ffmpeg"
-import { ReadStream, createReadStream, createWriteStream } from "fs"
+import { createReadStream } from "fs"
 import { Time } from "./utils/time"
 
 export class AudioSplitter {

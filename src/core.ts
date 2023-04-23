@@ -1,10 +1,9 @@
-import { createReadStream, readFileSync, writeFileSync } from "fs"
+import { createReadStream, readFileSync } from "fs"
 import { parse } from "csv-parse/sync"
 import { AudioSplitter } from "./audio-file-splitter"
 import path from "path"
 import { Time } from "./utils/time"
 import { extractExtension } from "./utils/extension"
-import { option } from "yargs"
 
 export type RunOptions = {
   inputPath: string
@@ -32,17 +31,16 @@ export async function run(options: RunOptions) {
       endSec = Time.parse(nextTrack[1])
     }
 
+    const trackName = currentTrack[0]
     const extension = extractExtension(options.inputPath)
-    const filename = extension
-      ? `${currentTrack[0]}.${extension}`
-      : currentTrack[0]
+    const filename = extension ? `${trackName}.${extension}` : trackName
 
     const outputPath = path.join(options.outputPath, filename)
 
     await audioSplitter.split(outputPath, startSec, endSec)
 
-    console.info(`[Info] splitted to ${outputPath}`)
+    console.info(`[Info] splitted ${trackName}`)
   }
 
-  console.info("complete")
+  console.info("done.")
 }

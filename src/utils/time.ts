@@ -1,3 +1,5 @@
+import { match } from "assert"
+
 export class Time {
   seconds: number
 
@@ -6,15 +8,18 @@ export class Time {
   }
 
   static parse(str: string): Time {
-    if (str.match(/^d+$/)) {
+    if (str.match(/^[0-9]+$/)) {
       return new Time(Number(str))
     }
 
-    const nums = str.trim().match(/[0-9]{2}/g)
-    if (nums !== null && nums.length < 4) {
+    const matches = str
+      .trim()
+      .match(/^(?:(?:([0-9]{2,}):([0-5][0-9]))|([0-9]{2})):([0-5][0-9])$/)
+    if (matches !== null) {
+      const nums = matches.slice(1).filter((n) => typeof n !== "undefined")
       let totalSeconds = 0
-      for (let i = 1; i <= nums.length; i++) {
-        totalSeconds += Math.pow(60, i) * Number(nums[nums.length - i])
+      for (let i = 0; i < nums.length; i++) {
+        totalSeconds += Math.pow(60, i) * Number(nums[nums.length - i - 1])
       }
       return new Time(totalSeconds)
     }
