@@ -13,8 +13,6 @@ export class AudioSplitter {
     return new Promise((resolve, reject) => {
       const command = ffmpeg(createReadStream(this.input))
         .setStartTime(start.seconds)
-        .audioChannels(2)
-        .audioFrequency(44100)
         .audioCodec("copy")
 
       if (end) {
