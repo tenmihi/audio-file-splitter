@@ -1,34 +1,43 @@
 import ffmpeg from "fluent-ffmpeg"
 import { createReadStream } from "fs"
 import { Time } from "./utils/time"
+import { extractExtension } from "./utils/extension"
+import path from "path"
+import { Track } from "./entities/track"
 
 export class AudioSplitter {
-  input: string
+  inputPath: string
+  outputPath: string
+  extension?: string
 
-  constructor(input: string) {
-    this.input = input
+  constructor(inputPath: string, outputPath: string) {
+    this.inputPath = inputPath
+    this.outputPath = outputPath
+
+    this.extension = extractExtension(inputPath)
   }
 
-  split(outputFilePath: string, start: Time, end?: Time): Promise<void> {
+  split(track: Track): Promise<void> {
     return new Promise((resolve, reject) => {
-      const command = ffmpeg(createReadStream(this.input))
-        .setStartTime(start.seconds)
+      const command = ffmpeg(createReadStream(this.inputPath))
+        .setStartTime(track.start.seconds)
         .audioCodec("copy")
-
-      if (end) {
-        const duration = end.seconds - start.seconds
-        command.duration(duration)
-      }
-
-      command
-        .on("end", (stdout) => {
-          resolve(stdout)
+        .on("end", () => {
+          resolve()
         })
         .on("error", (error: Error) => {
           reject(error)
         })
-        .output(outputFilePath)
-        .run()
+
+      if (track.duration) {
+        command.duration(track.duration)
+      }
+
+      const filename = this.extension
+        ? `${track.name}.${this.extension}`
+        : track.name
+
+      command.output(path.join(this.outputPath, filename)).run()
     })
   }
 }
