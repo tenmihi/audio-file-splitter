@@ -1,12 +1,9 @@
 import { parse } from "csv-parse/sync"
-import { readFileSync } from "fs"
 import { Time } from "./utils/time"
 import { Track } from "./entities/track"
 
-export function fromCSV(csvPath: string) {
-  const tracklistCsv = readFileSync(csvPath)
-
-  const tracklist = parse(tracklistCsv, {
+export function fromCSV(csv: string) {
+  const tracklist = parse(csv, {
     skip_empty_lines: true,
     columns: ["name", "start"],
   }) as { name: string; start: string }[]

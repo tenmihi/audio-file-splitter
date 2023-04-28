@@ -1,3 +1,4 @@
+import { readFileSync } from "fs"
 import { AudioSplitter } from "./audio-file-splitter"
 import { fromCSV } from "./tracklist"
 
@@ -8,7 +9,8 @@ export type RunOptions = {
 }
 
 export async function run(options: RunOptions) {
-  const tracklist = fromCSV(options.tracklistPath)
+  const csv = readFileSync(options.tracklistPath, "utf-8")
+  const tracklist = fromCSV(csv)
 
   const audioSplitter = new AudioSplitter(options.inputPath, options.outputPath)
 
