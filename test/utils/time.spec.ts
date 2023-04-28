@@ -1,4 +1,4 @@
-import { Time } from "../src/utils/time"
+import { Time } from "../../src/utils/time"
 
 describe("utils/time", () => {
   describe("parse", () => {
