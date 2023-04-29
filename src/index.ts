@@ -6,6 +6,7 @@ const args = yargs
   .options({
     output: {
       type: "string",
+      alias: "o",
     },
   })
   .parseSync()
